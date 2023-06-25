@@ -13,8 +13,7 @@ class Login:
         self.username = username
         self.passwords = []
 
-    def build_password_list(self) -> list:
-        passwords = []
+    def build_password_list(self):
 
         with open(self.wordlist_path, 'r') as file_obj:
             for password in file_obj:
@@ -23,7 +22,6 @@ class Login:
                 self.passwords.append(password)
 
         print(f'Prepared wordlist in memory with {password_count} entries.')
-        return passwords
 
     def login_workers(self):
         with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
