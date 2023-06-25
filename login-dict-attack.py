@@ -4,7 +4,7 @@ import concurrent.futures
 
 i = 0  # Global for keeping track of current password and total passwords.
 password_count = 0  # Total passwords from password list
-
+quit = False  # Stop worker threads; global state
 
 class Login:
     def __init__(self, url: str, wordlist_path: str, username: str):
@@ -14,7 +14,9 @@ class Login:
         self.passwords = []
 
     def build_password_list(self):
-
+        '''
+        Builds a list of passwords in memory for manipulation and processing.
+        '''
         with open(self.wordlist_path, 'r') as file_obj:
             for password in file_obj:
                 global password_count
@@ -24,6 +26,9 @@ class Login:
         print(f'Prepared wordlist in memory with {password_count} entries.')
 
     def login_workers(self):
+        '''
+        Creates the worker threads with concurrent.futures.
+        '''
         with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
             futures = []
 
@@ -31,6 +36,13 @@ class Login:
                 futures.append(executor.submit(self.perform_login, password.strip()))
 
     def perform_login(self, password: str):
+        '''
+        Attempts to login to a web form using credential data and POST
+        '''
+        global quit
+        if quit:  # stops worker threads on ctrl+c
+            sys.exit(0)
+
         credentials = {  # form fields
             "user_id": self.username,
             "passwd": password
@@ -48,7 +60,7 @@ class Login:
 
         if "OK" in response.text:  # success text
             print(f"[+] {self.username}:{password}")
-            sys.exit(0)
+            quit = True
         else:
             global i
             global password_count
@@ -67,4 +79,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print(f"Stopping new threads and shutting down.")
+        quit = True  # stops new worker threads on ctrl+c
