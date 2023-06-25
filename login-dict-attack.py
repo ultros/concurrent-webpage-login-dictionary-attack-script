@@ -37,7 +37,7 @@ class Login:
 
     def perform_login(self, password: str):
         '''
-        Attempts to login to a web form using credential data and POST
+        Attempts to login using credential data and POST
         '''
         global quit
         if quit:  # stops worker threads on ctrl+c
