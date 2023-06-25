@@ -2,9 +2,9 @@ import requests
 import sys
 import concurrent.futures
 
-
 i = 0  # Global for keeping track of current password and total passwords.
 password_count = 0  # Total passwords from password list
+
 
 class Login:
     def __init__(self, url: str, wordlist_path: str, username: str):
@@ -15,7 +15,6 @@ class Login:
 
     def build_password_list(self) -> list:
         passwords = []
-
 
         with open(self.wordlist_path, 'r') as file_obj:
             for password in file_obj:
@@ -49,9 +48,7 @@ class Login:
 
         response = requests.post(self.url, data=credentials, headers=headers)
 
-        # success text
-
-        if "OK" in response.text:
+        if "OK" in response.text:  # success text
             print(f"[+] {self.username}:{password}")
             sys.exit(0)
         else:
